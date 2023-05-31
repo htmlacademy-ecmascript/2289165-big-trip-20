@@ -1,4 +1,4 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { getDestinationById } from '../mock/destinations.js';
 import { humanizeDate, humanizeTime, getEventLasting } from '../utils.js';
 import { getOfferById } from '../mock/offers.js';
@@ -66,25 +66,36 @@ function createTripPointTemplate(tripPoints) {
   </li>`);
 }
 
-export default class TripPointView {
+export default class TripPointView extends AbstractView {
+  #tripPoints = null;
+  #handleEditClick = null;
+  #handleFavoriteClick = null;
 
-  constructor ({tripPoints}) {
-    this.tripPoints = tripPoints;
+  constructor ({tripPoints, onEditClick, onFavoriteClick}) {
+    super();
+    this.#tripPoints = tripPoints;
+    this.#handleEditClick = onEditClick;
+    this.#handleFavoriteClick = onFavoriteClick;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editEventHandler);
+
+    this.element.querySelector('.event__favorite-btn')
+      .addEventListener('click', this.#onFavoriteButtonClick);
   }
 
-  getTemplate() {
-    return createTripPointTemplate(this.tripPoints);
+  get template() {
+    return createTripPointTemplate(this.#tripPoints);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #editEventHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 
-    return this.element;
-  }
+  #onFavoriteButtonClick = (evt) => {
+    evt.preventDefault();
+    this.#handleFavoriteClick();
+  };
 
-  removeElement() {
-    this.element = null;
-  }
 }

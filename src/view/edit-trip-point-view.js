@@ -1,5 +1,5 @@
 import { CITIES } from '../const.js';
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { getDestinationById } from '../mock/destinations.js';
 import { getOffersByType, getOfferById } from '../mock/offers.js';
 import * as dayjs from 'dayjs';
@@ -153,25 +153,43 @@ function createEditableTripPointTemplate(tripPoints) {
 </li>`);
 }
 
-export default class EditableTripPointView {
+export default class EditableTripPointView extends AbstractView {
+  #tripPoints = null;
+  #handleFormSubmit = null;
+  #handleFormCancel = null;
+  #handleFormDelete = null;
 
-  constructor({ tripPoints }) {
-    this.tripPoints = tripPoints;
+  constructor({ tripPoints, onFormSubmit, onFormCancel, onFormDelete }) {
+    super();
+    this.#tripPoints = tripPoints;
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleFormCancel = onFormCancel;
+    this.#handleFormDelete = onFormDelete;
+
+    const form = this.element.querySelector('form');
+
+    form.addEventListener('submit', this.#formSubmitHandler);
+    form.addEventListener('reset', this.#formResetHandler);
+
+    form.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancelButtonClick);
   }
 
-  getTemplate() {
-    return createEditableTripPointTemplate(this.tripPoints);
+  get template() {
+    return createEditableTripPointTemplate(this.#tripPoints);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 
-    return this.element;
-  }
+  #formResetHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormDelete();
+  };
 
-  removeElement() {
-    this.element = null;
-  }
+  #onCancelButtonClick = (evt) => {
+    evt.preventDefault();
+    this.#handleFormCancel();
+  };
 }

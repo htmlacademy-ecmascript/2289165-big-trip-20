@@ -1,5 +1,5 @@
 import { CITIES } from '../const.js';
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { getDestinationById } from '../mock/destinations.js';
 import { getOffersByType, getOfferById } from '../mock/offers.js';
 import * as dayjs from 'dayjs';
@@ -164,25 +164,15 @@ function createNewTripPointTemplate(tripPoints) {
   </li>`);
 }
 
-export default class NewTripPointView {
+export default class NewTripPointView extends AbstractView {
+  #tripPoints = null;
 
   constructor({ tripPoints }) {
-    this.tripPoints = tripPoints;
+    super();
+    this.#tripPoints = tripPoints;
   }
 
-  getTemplate() {
-    return createNewTripPointTemplate(this.tripPoints);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createNewTripPointTemplate(this.#tripPoints);
   }
 }
