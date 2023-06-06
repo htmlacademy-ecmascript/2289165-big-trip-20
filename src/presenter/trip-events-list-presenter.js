@@ -3,6 +3,7 @@ import TripPointView from '../view/trip-point-view.js';
 import TripEventsListView from '../view/trip-events-list-view.js';
 import SortingView from '../view/sort-view.js';
 import EditableTripPointView from '../view/edit-trip-point-view.js';
+import TripEventsListEmptyView from '../view/trip-events-list-empty-view.js';
 
 export default class TripEventsListPresenter {
   #tripEventsListComponent = new TripEventsListView();
@@ -21,6 +22,12 @@ export default class TripEventsListPresenter {
     this.#tripPoints = [...this.#tripPointsModel.tripPoints];
 
     render(this.#tripEventsListComponent, this.#tripEventsListContainer, RenderPosition.AFTERBEGIN);
+
+    if (!this.#tripPoints.length) {
+      render(new TripEventsListEmptyView(), this.#tripEventsListContainer);
+      return;
+    }
+
     render(this.#sortingComponent, this.#tripEventsListComponent.element);
     for (let i = 0; i < this.#tripPoints.length; i++) {
       this.#renderTripPoint(this.#tripPoints[i]);
