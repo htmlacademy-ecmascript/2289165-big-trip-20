@@ -59,6 +59,13 @@ const OFFERS = [
   'Lunch in city'
 ];
 
+const FilterType = {
+  EVERYTHING: 'Everything',
+  FUTURE: 'Future',
+  PRESENT: 'Present',
+  PAST: 'Past',
+};
+
 const MAX_PICTURES = 5;
 const MAX_OFFERS = 5;
 const TRIP_POINTS_COUNT = 10;
@@ -67,5 +74,5 @@ const TIME_FORMAT = 'HH:mm';
 
 export {
   EVENTS, CITIES, DESCRIPTIONS, OFFERS, MAX_PICTURES, MAX_OFFERS, TRIP_POINTS_COUNT,
-  DATE_FORMAT, TIME_FORMAT
+  DATE_FORMAT, TIME_FORMAT, FilterType
 };
