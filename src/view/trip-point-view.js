@@ -15,8 +15,8 @@ function createSelectedOffers (offers) {
   );
 }
 
-function createTripPointTemplate(tripPoints) {
-  const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type} = tripPoints;
+function createTripPointTemplate(tripPoint) {
+  const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type} = tripPoint;
 
   const date = humanizeDate(dateFrom);
   const timeFrom = humanizeTime(dateFrom);
@@ -67,13 +67,13 @@ function createTripPointTemplate(tripPoints) {
 }
 
 export default class TripPointView extends AbstractView {
-  #tripPoints = null;
+  #tripPoint = null;
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-  constructor ({tripPoints, onEditClick, onFavoriteClick}) {
+  constructor ({tripPoint, onEditClick, onFavoriteClick}) {
     super();
-    this.#tripPoints = tripPoints;
+    this.#tripPoint = tripPoint;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
 
@@ -85,7 +85,7 @@ export default class TripPointView extends AbstractView {
   }
 
   get template() {
-    return createTripPointTemplate(this.#tripPoints);
+    return createTripPointTemplate(this.#tripPoint);
   }
 
   #editEventHandler = (evt) => {

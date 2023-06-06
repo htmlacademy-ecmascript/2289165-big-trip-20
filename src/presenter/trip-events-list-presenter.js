@@ -37,7 +37,7 @@ export default class TripEventsListPresenter {
     };
 
     const tripComponent = new TripPointView({
-      tripPoints: tripPoint,
+      tripPoint,
       onEditClick: () => {
         replaceTripComponentToEditForm();
         document.addEventListener('keydown', escKeyDownHandler);
@@ -46,7 +46,7 @@ export default class TripEventsListPresenter {
       }
     });
     const editableTripComponent = new EditableTripPointView({
-      tripPoints: tripPoint,
+      tripPoint,
       onFormSubmit: () => {
         replaceEditFormToTripComponent();
         document.removeEventListener('keydown', escKeyDownHandler);
