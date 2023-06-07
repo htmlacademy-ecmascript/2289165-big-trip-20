@@ -14,6 +14,10 @@ export default class TripInfoPresenter {
   init() {
     this.#tripPoints = [...this.#tripPointsModel.tripPoints];
 
+    if (!this.#tripPoints.length) {
+      return;
+    }
+
     render(new TripInfoView({tripPoints: this.#tripPoints}), this.#tripInfoContainer, RenderPosition.AFTERBEGIN);
   }
 }

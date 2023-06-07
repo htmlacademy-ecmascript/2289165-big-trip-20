@@ -154,14 +154,14 @@ function createEditableTripPointTemplate(tripPoints) {
 }
 
 export default class EditableTripPointView extends AbstractView {
-  #tripPoints = null;
+  #tripPoint = null;
   #handleFormSubmit = null;
   #handleFormCancel = null;
   #handleFormDelete = null;
 
-  constructor({ tripPoints, onFormSubmit, onFormCancel, onFormDelete }) {
+  constructor({ tripPoint, onFormSubmit, onFormCancel, onFormDelete }) {
     super();
-    this.#tripPoints = tripPoints;
+    this.#tripPoint = tripPoint;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleFormCancel = onFormCancel;
     this.#handleFormDelete = onFormDelete;
@@ -175,7 +175,7 @@ export default class EditableTripPointView extends AbstractView {
   }
 
   get template() {
-    return createEditableTripPointTemplate(this.#tripPoints);
+    return createEditableTripPointTemplate(this.#tripPoint);
   }
 
   #formSubmitHandler = (evt) => {
