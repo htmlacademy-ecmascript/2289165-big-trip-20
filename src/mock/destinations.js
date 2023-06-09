@@ -1,8 +1,6 @@
 import { CITIES, DESCRIPTIONS, MAX_PICTURES } from '../const';
 import { createIdGenerator, getRandomArrayElement, getRandomInteger } from '../utils';
 
-
-
 const createPicture = () => ({
   src: `https://loremflickr.com/248/152?random=${Math.random()}`,
   description: getRandomArrayElement(DESCRIPTIONS)

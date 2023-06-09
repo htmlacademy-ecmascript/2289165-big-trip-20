@@ -1,10 +1,10 @@
 import { OFFERS, EVENTS, MAX_OFFERS } from '../const';
-import { createIdGenerator, getRandomArrayElement, getRandomInteger } from '../utils';
+import { getRandomArrayElement, getRandomInteger } from '../utils';
+import { nanoid } from 'nanoid';
 
-const offerId = createIdGenerator();
 
 const createOfferDescription = () => ({
-  id: offerId(),
+  id: nanoid(),
   title: getRandomArrayElement(OFFERS),
   price: getRandomInteger(500, 5000)
 });
