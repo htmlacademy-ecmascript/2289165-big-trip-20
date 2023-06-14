@@ -66,6 +66,17 @@ const FilterType = {
   PAST: 'Past',
 };
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
+const SortType = {
+  DAY: 'sort-day',
+  TIME: 'sort-time',
+  PRICE: 'sort-price',
+};
+
 const MAX_PICTURES = 5;
 const MAX_OFFERS = 5;
 const TRIP_POINTS_COUNT = 10;
@@ -74,5 +85,5 @@ const TIME_FORMAT = 'HH:mm';
 
 export {
   EVENTS, CITIES, DESCRIPTIONS, OFFERS, MAX_PICTURES, MAX_OFFERS, TRIP_POINTS_COUNT,
-  DATE_FORMAT, TIME_FORMAT, FilterType
+  DATE_FORMAT, TIME_FORMAT, FilterType, Mode, SortType
 };
