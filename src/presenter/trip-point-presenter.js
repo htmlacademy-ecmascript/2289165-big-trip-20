@@ -60,6 +60,7 @@ export default class TripPointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#editableTripPointComponent.reset(this.#tripPoint);
       this.#replaceEditFormToTripPointComponent();
     }
   }
@@ -84,6 +85,7 @@ export default class TripPointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape') {
       evt.preventDefault();
+      this.#editableTripPointComponent.reset(this.#tripPoint);
       this.#replaceEditFormToTripPointComponent();
     }
   };
@@ -97,11 +99,13 @@ export default class TripPointPresenter {
     this.#handleTripPointUpdate({...this.#tripPoint, isFavorite: !this.#tripPoint.isFavorite});
   };
 
-  #handleFormSubmit = () => {
+  #handleFormSubmit = (data) => {
+    this.#handleTripPointUpdate(data);
     this.#replaceEditFormToTripPointComponent();
   };
 
   #handleFormCancel = () => {
+    this.#editableTripPointComponent.reset(this.#tripPoint);
     this.#replaceEditFormToTripPointComponent();
   };
 

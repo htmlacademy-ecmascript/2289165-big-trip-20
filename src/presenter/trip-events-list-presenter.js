@@ -10,7 +10,6 @@ import * as dayjs from 'dayjs';
 export default class TripEventsListPresenter {
   #tripEventsListComponent = new TripEventsListView();
 
-
   #tripEventsListContainer = null;
   #tripPointsModel = null;
   #tripPoints = [];

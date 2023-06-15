@@ -30,4 +30,4 @@ const getDestinationById = (id) => {
   return destination;
 };
 
-export { getDestinationById };
+export { getDestinationById, allDestinations };

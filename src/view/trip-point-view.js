@@ -27,8 +27,8 @@ function createTripPointTemplate(tripPoint) {
 
   const offersList = [];
 
-  offers.forEach((id) => {
-    offersList.push(getOfferById(id));
+  offers.forEach((offer) => {
+    offersList.push(getOfferById(offer));
   });
 
   return (`<li class="trip-events__item">

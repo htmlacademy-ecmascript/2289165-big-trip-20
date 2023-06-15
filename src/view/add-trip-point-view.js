@@ -17,7 +17,7 @@ function createOffersList(allOffers, checkedOffers) {
     const isChecked = checkedOffers.includes(offer) ? 'checked' : '';
     newOffers.push(`
       <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').join('-')}-1" type="checkbox" name="event-offer-${offer.title.split(' ').join('-')}" ${isChecked}>
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').join('-')}-1" type="checkbox" name="event-offer-${offer.title.split(' ').join('-')}" data-id="${offer.id}" ${isChecked}>
         <label class="event__offer-label" for="event-offer-${offer.title.split(' ').join('-')}-1">
           <span class="event__offer-title">${offer.title}</span>
           +€&nbsp;
