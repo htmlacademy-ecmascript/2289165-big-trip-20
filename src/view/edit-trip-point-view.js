@@ -3,6 +3,9 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { getDestinationById, allDestinations } from '../mock/destinations.js';
 import { getOffersByType, getOfferById } from '../mock/offers.js';
 import * as dayjs from 'dayjs';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+
 
 function createCityElements(cities) {
   return (
@@ -124,6 +127,8 @@ export default class EditableTripPointView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #handleFormCancel = null;
   #handleFormDelete = null;
+  #datePickerFrom = null;
+  #datePickerTo = null;
 
   constructor({ tripPoint, onFormSubmit, onFormCancel, onFormDelete }) {
     super();
@@ -139,6 +144,18 @@ export default class EditableTripPointView extends AbstractStatefulView {
     return createEditableTripPointTemplate(this._state);
   }
 
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datePickerFrom) {
+      this.#datePickerFrom.destroy();
+      this.#datePickerFrom = null;
+    } else if (this.#datePickerTo) {
+      this.#datePickerTo.destroy();
+      this.#datePickerTo = null;
+    }
+  }
+
   _restoreHandlers() {
 
     const form = this.element.querySelector('form');
@@ -151,6 +168,52 @@ export default class EditableTripPointView extends AbstractStatefulView {
     form.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationChange);
     form.querySelector('.event__input--price').addEventListener('change', this.#onPriceChange);
     form.querySelector('.event__available-offers').addEventListener('change', this.#onOfferChange);
+    this.#setDatePickers();
+  }
+
+  #startDateChangeHandler = ([dateFrom]) => {
+    this.updateElement({
+      dateFrom: dateFrom,
+    });
+  };
+
+  #endDateChangeHandler = ([dateTo]) => {
+    this.updateElement({
+      dateTo: dateTo,
+    });
+  };
+
+  #setDatePickers() {
+    const [dateFromElement, dateToElement] = this.element.querySelectorAll('.event__input--time');
+    this.#datePickerFrom = flatpickr(
+      dateFromElement,
+      {
+        dateFormat: 'd/m/y H:i',
+        enableTime: true,
+        'time_24hr': true,
+        defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
+        locale: {
+          firstDayOfWeek: 1
+        },
+        onChange: this.#startDateChangeHandler,
+      }
+    );
+
+    this.#datePickerTo = flatpickr(
+      dateToElement,
+      {
+        dateFormat: 'd/m/y H:i',
+        enableTime: true,
+        'time_24hr': true,
+        defaultDate: this._state.dateTo,
+        maxDate: this._state.dateFrom,
+        locale: {
+          firstDayOfWeek: 1
+        },
+        onChange: this.#endDateChangeHandler,
+      }
+    );
   }
 
   #formSubmitHandler = (evt) => {
@@ -226,7 +289,6 @@ export default class EditableTripPointView extends AbstractStatefulView {
     }
   };
 
-
   static parseTripPointToState = (tripPoint) => ({ ...tripPoint });
   static parseStateToTripPoint = (state) => ({ ...state });
 
@@ -234,4 +296,3 @@ export default class EditableTripPointView extends AbstractStatefulView {
     this.updateElement(EditableTripPointView.parseTripPointToState(tripPoint));
   }
 }
-
