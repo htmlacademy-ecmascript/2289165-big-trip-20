@@ -81,6 +81,7 @@ export default class TripEventsListPresenter {
     this.#sortingComponent = new SortingView({
       onSortTypeChange: this.#handleSortTypeChange
     });
+    // render(this.#sortingComponent, this.#tripEventsListContainer);
     render(this.#sortingComponent, this.#tripEventsListComponent.element);
   }
 

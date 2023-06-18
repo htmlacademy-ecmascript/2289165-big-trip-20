@@ -50,6 +50,6 @@ export default class SortingView extends AbstractView {
     }
 
     evt.preventDefault();
-    this.#handleSortTypeChange(evt.target.dataset.sortType);
+    this.#handleSortTypeChange(evt.target.id);//dataset.sortType);
   };
 }

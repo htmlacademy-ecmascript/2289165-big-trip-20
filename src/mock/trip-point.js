@@ -1,6 +1,6 @@
 import { createIdGenerator, getRandomArrayElement, getRandomInteger } from '../utils';
 import { EVENTS, CITIES } from '../const';
-import { getOffersByType } from './offers';
+import { getOffersIds } from './offers';
 import { nanoid } from 'nanoid';
 
 
@@ -8,7 +8,7 @@ const dateStep = createIdGenerator();
 
 const getTripPoint = () => {
   const pointType = getRandomArrayElement(EVENTS);
-  const offerIds = getOffersByType(pointType);
+  const offerIds = getOffersIds(pointType);
 
   const tripPoint = {
     id: nanoid(),

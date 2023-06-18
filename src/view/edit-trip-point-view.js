@@ -20,9 +20,9 @@ function createOffersList(allOffers, checkedOffers) {
     const isChecked = checkedOffers.includes(offer) ? 'checked' : '';
     newOffers.push(`
       <div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').join('-')}-${counter}" type="checkbox" name="event-offer-${offer.title.split(' ').join('-')}" data-id="${offer.id}" ${isChecked}>
-        <label class="event__offer-label" for="event-offer-${offer.title.split(' ').join('-')}-${counter}">
-          <span class="event__offer-title">${offer.title}</span>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').join('-')}-${counter}" type="checkbox" name="event-offer-${offer.title.split(' ').join('-')}" data-id="${offer.id}" ${isChecked}>
+      <label class="event__offer-label" for="event-offer-${offer.title.split(' ').join('-')}-${counter}">
+        <span class="event__offer-title">${offer.title}</span>
           +€&nbsp;
           <span class="event__offer-price">${offer.price}</span>
         </label>
@@ -161,7 +161,7 @@ export default class EditableTripPointView extends AbstractStatefulView {
     const form = this.element.querySelector('form');
 
     form.addEventListener('submit', this.#formSubmitHandler);
-    form.addEventListener('reset', this.#formResetHandler);
+    form.addEventListener('reset', this.#formDeleteHandler);
 
     form.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancelButtonClick);
     form.querySelector('.event__type-group').addEventListener('change', this.#onTripPointTypeChange);
@@ -192,7 +192,7 @@ export default class EditableTripPointView extends AbstractStatefulView {
         enableTime: true,
         'time_24hr': true,
         defaultDate: this._state.dateFrom,
-        maxDate: this._state.dateTo,
+        minDate: 'today',
         locale: {
           firstDayOfWeek: 1
         },
@@ -207,7 +207,7 @@ export default class EditableTripPointView extends AbstractStatefulView {
         enableTime: true,
         'time_24hr': true,
         defaultDate: this._state.dateTo,
-        maxDate: this._state.dateFrom,
+        minDate: this._state.dateFrom,
         locale: {
           firstDayOfWeek: 1
         },
@@ -221,7 +221,7 @@ export default class EditableTripPointView extends AbstractStatefulView {
     this.#handleFormSubmit(EditableTripPointView.parseStateToTripPoint(this._state));
   };
 
-  #formResetHandler = (evt) => {
+  #formDeleteHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormDelete();
   };

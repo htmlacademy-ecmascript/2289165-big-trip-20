@@ -51,7 +51,7 @@ export default class TripPointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#tripPointComponent, prevEditableTripPointComponent);
+      replace(this.#editableTripPointComponent, prevEditableTripPointComponent);
     }
 
     remove(prevTripPointComponent);
@@ -92,7 +92,7 @@ export default class TripPointPresenter {
 
   #handleEditClick = () => {
     this.#replaceTripPointComponentToEditForm();
-    document.addEventListener('keydown', this.#escKeyDownHandler);
+    // document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
   #handleFavoriteClick = () => {
