@@ -66,6 +66,6 @@ const filter = {
   [FilterType.PAST]: (tripPoints) => tripPoints.filter((tripPoint) => isTripPointPast(tripPoint.dateTo)),
 };
 
-const updateTripPoint = (points, update) => points.map((point) => point.id === update.id ? update : points);
+const updateTripPoint = (points, update) => points.map((point) => point.id === update.id ? update : point);
 
 export { getRandomInteger, getRandomArrayElement, createIdGenerator, humanizeDate, humanizeTime, getEventLasting, filter, updateTripPoint };

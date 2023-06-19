@@ -15,7 +15,7 @@ const createOfferbyType = (type) => ({
 });
 
 const getOffers = () => {
-  const offers = new Array(EVENTS.length);
+  const offers = [];
   for (let i = 0; i < EVENTS.length; i++) {
     offers[i] = createOfferbyType(EVENTS[i]);
   }
@@ -35,15 +35,15 @@ const getOffersIdByType = (type) => {
 };
 
 const getOfferById = (id) => {
-  let offerById;
-  allOffers.forEach((element) => {
-    element.offers.forEach((offer) => {
-      if (offer.id === id.id) {
-        offerById = offer;
+  let offerItem;
+  allOffers.forEach((offer) => {
+    offer.offers.forEach((item) => {
+      if (item.id === id) {
+        offerItem = item;
       }
     });
   });
-  return offerById;
+  return offerItem;
 };
 
 const getOffersByType = (type) => {
@@ -57,6 +57,16 @@ const getOffersByType = (type) => {
   return offersByType;
 };
 
-export { getOffersIdByType, getOfferById, getOffersByType };
+const getOffersIds = (type) => {
+  const offersId = [];
+  allOffers.forEach((offer) => {
+    if (offer.type === type) {
+      offer.offers.forEach((element) => offersId.push(element.id));
+    }
+  });
+  return offersId;
+};
+
+export { getOffersIdByType, getOfferById, getOffersByType, getOffersIds };
 
 
