@@ -1,12 +1,12 @@
 import { render, replace, remove } from '../framework/render.js';
 import TripPointView from '../view/trip-point-view.js';
 import EditableTripPointView from '../view/edit-trip-point-view.js';
-import { Mode } from '../const.js';
+import { Mode, UserAction, UpdateType } from '../const.js';
 
 export default class TripPointPresenter {
 
   #tripEventsListContainer = null;
-  #handleTripPointUpdate = null;
+  #handleDataChange = null;
   #handleModeChange = null;
 
   #tripPointComponent = null;
@@ -18,7 +18,7 @@ export default class TripPointPresenter {
 
   constructor({ tripEventsListContainer, onDataChange, onModeChange }) {
     this.#tripEventsListContainer = tripEventsListContainer;
-    this.#handleTripPointUpdate = onDataChange;
+    this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
   }
 
@@ -31,7 +31,7 @@ export default class TripPointPresenter {
     this.#tripPointComponent = new TripPointView({
       tripPoint: this.#tripPoint,
       onEditClick: this.#handleEditClick,
-      onFavoriteClick: this.#handleFavoriteClick,
+      onFavoriteClick: this.#handleFavouriteClick,
     });
 
     this.#editableTripPointComponent = new EditableTripPointView({
@@ -92,15 +92,23 @@ export default class TripPointPresenter {
 
   #handleEditClick = () => {
     this.#replaceTripPointComponentToEditForm();
-    // document.addEventListener('keydown', this.#escKeyDownHandler);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
   };
 
-  #handleFavoriteClick = () => {
-    this.#handleTripPointUpdate({...this.#tripPoint, isFavorite: !this.#tripPoint.isFavorite});
+  #handleFavouriteClick = () => {
+    this.#handleDataChange(
+      UserAction.UPDATE_TRIP_POINT,
+      UpdateType.PATCH,
+      {...this.#tripPoint, isFavorite: !this.#tripPoint.isFavorite}
+    );
   };
 
   #handleFormSubmit = (data) => {
-    this.#handleTripPointUpdate(data);
+    this.#handleDataChange(
+      UserAction.UPDATE_TRIP_POINT,
+      UpdateType.MINOR,
+      data
+    );
     this.#replaceEditFormToTripPointComponent();
   };
 
@@ -109,7 +117,12 @@ export default class TripPointPresenter {
     this.#replaceEditFormToTripPointComponent();
   };
 
-  #handleFormDelete = () => {
+  #handleFormDelete = (data) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      data
+    );
     remove(this.#editableTripPointComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };

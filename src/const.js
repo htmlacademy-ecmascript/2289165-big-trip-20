@@ -59,6 +59,17 @@ const OFFERS = [
   'Lunch in city'
 ];
 
+const TRIP_POINT_FORM = {
+  basePrice: '',
+  dateFrom: '',
+  dateTo: '',
+  destination: '',
+  isFavorite: false,
+  offers: [],
+  type: 'taxi'
+};
+
+
 const FilterType = {
   EVERYTHING: 'Everything',
   FUTURE: 'Future',
@@ -77,13 +88,34 @@ const SortType = {
   PRICE: 'sort-price',
 };
 
+const UserAction = {
+  UPDATE_TRIP_POINT: 'UPDATE_TRIP_POINT',
+  ADD_TRIP_POINT: 'ADD_TRIP_POINT',
+  DELETE_TRIP_POINT: 'DELETE_TRIP_POINT',
+};
+
+const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
+};
+
+const EmptyListText = {
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.FUTURE]: 'There are no future events now',
+  [FilterType.PRESET]: 'There are no present events now',
+  [FilterType.PAST]: 'There are no past events now',
+};
+
+
 const MAX_PICTURES = 5;
 const MAX_OFFERS = 5;
-const TRIP_POINTS_COUNT = 10;
+const TRIP_POINTS_COUNT = 3;
 const DATE_FORMAT = 'DD MMM YYYY';
 const TIME_FORMAT = 'HH:mm';
+const MAX_DESTINATION_LENGTH = 3;
 
 export {
   EVENTS, CITIES, DESCRIPTIONS, OFFERS, MAX_PICTURES, MAX_OFFERS, TRIP_POINTS_COUNT,
-  DATE_FORMAT, TIME_FORMAT, FilterType, Mode, SortType
+  DATE_FORMAT, TIME_FORMAT, FilterType, Mode, SortType, UserAction, UpdateType, TRIP_POINT_FORM, MAX_DESTINATION_LENGTH, EmptyListText
 };
