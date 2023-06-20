@@ -77,7 +77,7 @@ function createEditableTripPointTemplate(tripPoints) {
       <label class="event__label  event__type-output" for="event-destination-1">
         ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinations.name}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinations.name}" list="destination-list-1" required>
       <datalist id="destination-list-1">
       ${createCityElements(CITIES)}
       </datalist>
@@ -85,10 +85,10 @@ function createEditableTripPointTemplate(tripPoints) {
 
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dayjs(dateFrom).format('DD/MM/YY HH:mm')}">
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''}" required>
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dayjs(dateTo).format('DD/MM/YY HH:mm')}">
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''}" required>
     </div>
 
     <div class="event__field-group  event__field-group--price">
@@ -96,8 +96,9 @@ function createEditableTripPointTemplate(tripPoints) {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+      <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}" required>
     </div>
+
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
     <button class="event__reset-btn" type="reset">Delete</button>
@@ -166,7 +167,7 @@ export default class EditableTripPointView extends AbstractStatefulView {
     form.querySelector('.event__rollup-btn').addEventListener('click', this.#onCancelButtonClick);
     form.querySelector('.event__type-group').addEventListener('change', this.#onTripPointTypeChange);
     form.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationChange);
-    form.querySelector('.event__input--price').addEventListener('change', this.#onPriceChange);
+    form.querySelector('.event__input--price').addEventListener('input', this.#onPriceChange);
     form.querySelector('.event__available-offers').addEventListener('change', this.#onOfferChange);
     this.#setDatePickers();
   }
@@ -193,6 +194,7 @@ export default class EditableTripPointView extends AbstractStatefulView {
         'time_24hr': true,
         defaultDate: this._state.dateFrom,
         minDate: 'today',
+        maxDate: this._state.dateTo,
         locale: {
           firstDayOfWeek: 1
         },
@@ -207,7 +209,7 @@ export default class EditableTripPointView extends AbstractStatefulView {
         enableTime: true,
         'time_24hr': true,
         defaultDate: this._state.dateTo,
-        minDate: this._state.dateFrom,
+        minDate: this._state.dateFrom ? this._state.dateFrom : 'today',
         locale: {
           firstDayOfWeek: 1
         },
@@ -223,7 +225,7 @@ export default class EditableTripPointView extends AbstractStatefulView {
 
   #formDeleteHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormDelete();
+    this.#handleFormDelete(EditableTripPointView.parseStateToTripPoint(this._state));
   };
 
   #onCancelButtonClick = (evt) => {
@@ -231,9 +233,6 @@ export default class EditableTripPointView extends AbstractStatefulView {
     this.#handleFormCancel();
   };
 
-  // При смене типа точки маршрута блок с дополнительными опциями перерисовывается,
-  // если у нового выбранного типа точки есть опции; или скрывается, если опций нет.
-  // Остальные данные, введённые пользователем, должны быть сохранены.
   #onTripPointTypeChange = (evt) => {
     evt.preventDefault();
     if (evt.target.tagName === 'INPUT') {
@@ -244,9 +243,6 @@ export default class EditableTripPointView extends AbstractStatefulView {
     }
   };
 
-  // При смене пункта назначения блок с описанием перерисовывается;
-  // или скрывается, если у пункта назначения нет описания и фотографий к нему.
-  // Остальные данные, введённые пользователем, должны быть сохранены.
   #onDestinationChange = (evt) => {
     evt.preventDefault();
     const newDestination = allDestinations.find((destination) => destination.name === evt.target.value);
@@ -273,7 +269,7 @@ export default class EditableTripPointView extends AbstractStatefulView {
       return;
     }
     this._setState({
-      basePrice: ''
+      basePrice: '',
     });
   };
 

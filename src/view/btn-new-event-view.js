@@ -4,7 +4,7 @@ function createBtnAddNewTripPointTemplate() {
   return '<button class="trip-main__event-add-btn  btn  btn--big  btn--yellow" type="button">New event</button>';
 }
 
-export default class BtnNewEventView extends AbstractView {
+export default class NewEventBtnView extends AbstractView {
 
   #handleNewEventBtnClick = null;
 
