@@ -30,15 +30,24 @@ export default class TripPointPresenter {
     const prevTripPointComponent = this.#tripPointComponent;
     const prevEditableTripPointComponent = this.#editableTripPointComponent;
 
+    const destinations = this.#tripPointsModel.destinations;
+    const offers = this.#tripPointsModel.offers;
+    const events = this.#tripPointsModel.getEvents();
+    const cities = this.#tripPointsModel.getCities();
+
     this.#tripPointComponent = new TripPointView({
-      tripPointsModel: this.#tripPointsModel,
+      destinations: destinations,
+      offers: offers,
       tripPoint: this.#tripPoint,
       onEditClick: this.#handleEditClick,
       onFavoriteClick: this.#handleFavouriteClick,
     });
 
     this.#editableTripPointComponent = new EditableTripPointView({
-      tripPointsModel: this.#tripPointsModel,
+      destinations: destinations,
+      offers: offers,
+      events: events,
+      cities: cities,
       tripPoint: this.#tripPoint,
       onFormSubmit: this.#handleFormSubmit,
       onFormCancel: this.#handleFormCancel,
@@ -56,6 +65,7 @@ export default class TripPointPresenter {
 
     if (this.#mode === Mode.EDITING) {
       replace(this.#editableTripPointComponent, prevEditableTripPointComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevTripPointComponent);
@@ -72,6 +82,42 @@ export default class TripPointPresenter {
   destroy() {
     remove(this.#tripPointComponent);
     remove(this.#editableTripPointComponent);
+    document.removeEventListener('keydown', this.#escKeyDownHandler);
+  }
+
+  setSaving() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editableTripPointComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
+  }
+
+  setDeleting() {
+    if (this.#mode === Mode.EDITING) {
+      this.#editableTripPointComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  }
+
+  setAborting() {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#tripPointComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#editableTripPointComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#editableTripPointComponent.shake(resetFormState);
   }
 
   #replaceTripPointComponentToEditForm() {
@@ -113,7 +159,7 @@ export default class TripPointPresenter {
       UpdateType.MINOR,
       data
     );
-    this.#replaceEditFormToTripPointComponent();
+    // this.#replaceEditFormToTripPointComponent();
   };
 
   #handleFormCancel = () => {

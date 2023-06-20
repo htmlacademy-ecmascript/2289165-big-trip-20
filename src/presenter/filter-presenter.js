@@ -20,6 +20,11 @@ export default class FilterPresenter {
   }
 
   init() {
+
+    if (!this.#tripPointsModel.offers.length || !this.#tripPointsModel.destinations.length) {
+      return;
+    }
+
     const filters = this.filters;
     this.#filterComponent = new FilterView({
       filter: filters,

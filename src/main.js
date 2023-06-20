@@ -21,7 +21,7 @@ const filterPresenter = new FilterPresenter({filterContainer: filterElement, tri
 const tripInfoPresenter = new TripInfoPresenter({tripInfoContainer: siteHeaderElement, tripPointsModel});
 const tripEventsListPresenter = new TripEventsListPresenter({newEventBtn: siteHeaderElement, tripEventsListContainer: tripEventsElement, tripPointsModel, filterModel});
 
+tripPointsModel.init();
 tripInfoPresenter.init();
 filterPresenter.init();
 tripEventsListPresenter.init();
-tripPointsModel.init();

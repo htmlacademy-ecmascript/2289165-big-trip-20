@@ -1,14 +1,19 @@
 import Observable from '../framework/observable.js';
-import { UpdateType } from '../const';
+import { UpdateType, TimeLimitForUiBlocker } from '../const';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 
-export default class TripPointsModel extends Observable{
+export default class TripPointsModel extends Observable {
   #tripPointsApiService = null;
 
   #tripPoints = [];
   #destinations = [];
   #offers = [];
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimitForUiBlocker.LOWER_LIMIT,
+    upperLimit: TimeLimitForUiBlocker.UPPER_LIMIT
+  });
 
-  constructor ({tripPointsApiService}) {
+  constructor({ tripPointsApiService }) {
     super();
     this.#tripPointsApiService = tripPointsApiService;
   }
@@ -25,7 +30,12 @@ export default class TripPointsModel extends Observable{
     return this.#offers;
   }
 
-  async init () {
+  getCities = () => this.#destinations.map((destination) => destination.name);
+
+  getEvents = () => this.#offers.map((offer) => offer.type);
+
+  async init() {
+    this.#uiBlocker.block();
     try {
       const tripPoints = await this.#tripPointsApiService.tripPoints;
       const destinations = await this.#tripPointsApiService.destinations;
@@ -33,10 +43,14 @@ export default class TripPointsModel extends Observable{
       this.#tripPoints = tripPoints.map(this.#adaptToClient);
       this.#destinations = destinations;
       this.#offers = offers;
+      this.#uiBlocker.unblock();
     } catch (err) {
+      this._notify(UpdateType.ERROR, err);
       this.#tripPoints = [];
       this.#destinations = [];
       this.#offers = [];
+      this.#uiBlocker.unblock();
+      return;
     }
     this._notify(UpdateType.INIT);
   }
@@ -58,50 +72,16 @@ export default class TripPointsModel extends Observable{
     return adaptedTripPoint;
   }
 
-  getDestinationById = (id) => this.#destinations.find((element) => element.id === id);
+  async addTripPoint(updateType, update) {
+    try {
+      const response = await this.#tripPointsApiService.addTripPoint(update);
+      const newTripPoint = this.#adaptToClient(response);
 
-  getOfferById = (id) => {
-    let offerById;
-    this.#offers.forEach((element) => {
-      element.offers.forEach((offer) => {
-        if (offer.id === id) {
-          offerById = offer;
-        }
-      });
-    });
-    return offerById;
-  };
-
-  getOffersByType = (type) => {
-    let offersByType = [];
-    this.#offers.forEach((offer) => {
-      if (offer.type === type) {
-        offersByType = offer.offers;
-      }
-    });
-    return offersByType;
-  };
-
-  getCheckedOffers = (offers) => {
-    const offersList = [];
-    offers.forEach((id) => {
-      offersList.push(this.getOfferById(id));
-    });
-    return offersList;
-  };
-
-
-  // getCities = () => this.#destinations.map((destination) => destination.name);
-  // getEvents = () => this.#offers.map((offer) => offer.type);
-
-
-  addTripPoint(updateType, update) {
-    this.#tripPoints = [
-      update,
-      ...this.#tripPoints,
-    ];
-
-    this._notify(updateType, update);
+      this.#tripPoints = [newTripPoint, ...this.#tripPoints];
+      this._notify(updateType, update);
+    } catch (err) {
+      throw new Error('Can\'t add task');
+    }
   }
 
   async updateTripPoint(updateType, update) {
@@ -112,29 +92,33 @@ export default class TripPointsModel extends Observable{
     }
 
     try {
-      const respose = await this.#tripPointsApiService.updateTripPoint(update);
-      const updatedTripPoint = this.#adaptToClient(respose);
+      const response = await this.#tripPointsApiService.updateTripPoint(update);
+      const updatedTripPoint = this.#adaptToClient(response);
 
       this.#tripPoints[index] = updatedTripPoint;
 
       this._notify(updateType, update);
-    } catch(err) {
+    } catch (err) {
       throw new Error('Can\'t update point');
     }
   }
 
-  deleteTripPoint(updateType, update) {
+  async deleteTripPoint(updateType, update) {
     const index = this.#tripPoints.findIndex((tripPoint) => tripPoint.id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t delete unexisting trip point');
     }
 
-    this.#tripPoints = [
-      ...this.#tripPoints.slice(0, index),
-      ...this.#tripPoints.slice(index + 1),
-    ];
-
-    this._notify(updateType);
+    try {
+      await this.#tripPointsApiService.deleteTripPoint(update);
+      this.#tripPoints = [
+        ...this.#tripPoints.slice(0, index),
+        ...this.#tripPoints.slice(index + 1),
+      ];
+      this._notify(updateType);
+    } catch (err) {
+      throw new Error('Can\'t delete task');
+    }
   }
 }

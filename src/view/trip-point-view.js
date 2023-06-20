@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { humanizeDate, humanizeTime, getEventLasting } from '../utils.js';
+import { humanizeDate, humanizeTime, getEventLasting, getDestinationById, getOffersByType } from '../utils.js';
 
 function createSelectedOffers (offers) {
   return (
@@ -13,20 +13,25 @@ function createSelectedOffers (offers) {
   );
 }
 
-function createTripPointTemplate(tripPoint, tripPointsModel) {
+function createTripPointTemplate(tripPoint, destinations, allOffers) {
   const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type} = tripPoint;
 
   const date = humanizeDate(dateFrom);
   const timeFrom = humanizeTime(dateFrom);
   const timeTo = humanizeTime(dateTo);
-  const destinationElement = tripPointsModel.getDestinationById(destination);
+  const destinationById = getDestinationById(destination, destinations);
+  const offersByType = getOffersByType(type, allOffers);
   const eventLasting = getEventLasting(dateFrom, dateTo);
   const favorite = isFavorite ? 'event__favorite-btn--active' : '';
 
   const offersList = [];
 
-  offers.forEach((offer) => {
-    offersList.push(tripPointsModel.getOfferById(offer));
+  offers.forEach((id) => {
+    offersByType.offers.find((offer) => {
+      if(offer.id === id) {
+        offersList.push(offer);
+      }
+    });
   });
 
   return (`<li class="trip-events__item">
@@ -35,7 +40,7 @@ function createTripPointTemplate(tripPoint, tripPointsModel) {
       <div class="event__type">
         <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
       </div>
-      <h3 class="event__title">${type} ${destinationElement.name} Amsterdam</h3>
+      <h3 class="event__title">${type} ${destinationById.name} Amsterdam</h3>
       <div class="event__schedule">
         <p class="event__time">
           <time class="event__start-time" datetime="2019-03-18T10:30">${timeFrom}</time>
@@ -65,14 +70,16 @@ function createTripPointTemplate(tripPoint, tripPointsModel) {
 }
 
 export default class TripPointView extends AbstractView {
-  #tripPointsModel = null;
+  #destinations = null;
+  #offers = null;
   #tripPoint = null;
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-  constructor ({tripPointsModel, tripPoint, onEditClick, onFavoriteClick}) {
+  constructor ({destinations, offers, tripPoint, onEditClick, onFavoriteClick}) {
     super();
-    this.#tripPointsModel = tripPointsModel;
+    this.#destinations = destinations;
+    this.#offers = offers;
     this.#tripPoint = tripPoint;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
@@ -85,7 +92,7 @@ export default class TripPointView extends AbstractView {
   }
 
   get template() {
-    return createTripPointTemplate(this.#tripPoint, this.#tripPointsModel);
+    return createTripPointTemplate(this.#tripPoint, this.#destinations, this.#offers);
   }
 
   #editEventHandler = (evt) => {

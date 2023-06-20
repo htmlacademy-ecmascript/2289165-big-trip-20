@@ -17,18 +17,18 @@ const FilterType = {
   EVERYTHING: 'Everything',
   FUTURE: 'Future',
   PRESENT: 'Present',
-  PAST: 'Past',
+  PAST: 'Past'
 };
 
 const Mode = {
   DEFAULT: 'DEFAULT',
-  EDITING: 'EDITING',
+  EDITING: 'EDITING'
 };
 
 const SortType = {
   DAY: 'sort-day',
   TIME: 'sort-time',
-  PRICE: 'sort-price',
+  PRICE: 'sort-price'
 };
 
 const UserAction = {
@@ -41,7 +41,8 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
-  INIT: 'INIT'
+  INIT: 'INIT',
+  ERROR: 'ERROR'
 };
 
 const EmptyListText = {
@@ -51,6 +52,12 @@ const EmptyListText = {
   Past: 'There are no past events now'
 };
 
+const TimeLimitForUiBlocker = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
-export { DATE_FORMAT, TIME_FORMAT, FilterType, Mode, SortType, UserAction, UpdateType, TRIP_POINT_FORM, MAX_DESTINATION_LENGTH, EmptyListText
+
+
+export { DATE_FORMAT, TIME_FORMAT, FilterType, Mode, SortType, UserAction, UpdateType, TRIP_POINT_FORM, MAX_DESTINATION_LENGTH, EmptyListText, TimeLimitForUiBlocker
 };

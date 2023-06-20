@@ -1,13 +1,12 @@
-import {render, remove, RenderPosition} from '../framework/render.js';
+import { render, remove, RenderPosition } from '../framework/render.js';
 import TripInfoView from '../view/trip-info-view.js';
 
 export default class TripInfoPresenter {
   #tripInfoContainer = null;
   #tripInfoComponent = null;
   #tripPointsModel = null;
-  #tripPoints = [];
 
-  constructor({tripInfoContainer, tripPointsModel}) {
+  constructor({ tripInfoContainer, tripPointsModel }) {
     this.#tripInfoContainer = tripInfoContainer;
     this.#tripPointsModel = tripPointsModel;
 
@@ -15,12 +14,15 @@ export default class TripInfoPresenter {
   }
 
   init() {
+    const tripPoints = this.#tripPointsModel.tripPoints;
+    const destinations = this.#tripPointsModel.destinations;
+    const offers = this.#tripPointsModel.offers;
 
-    if (!this.#tripPointsModel.tripPoints.length) {
+    if (!tripPoints.length || !destinations.length || !offers.length) {
       return;
     }
 
-    this.#tripInfoComponent = new TripInfoView({tripPointsModel: this.#tripPointsModel});
+    this.#tripInfoComponent = new TripInfoView({ tripPoints, destinations, offers });
     render(this.#tripInfoComponent, this.#tripInfoContainer, RenderPosition.AFTERBEGIN);
   }
 

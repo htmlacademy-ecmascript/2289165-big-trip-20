@@ -1,6 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDate } from '../utils.js';
 import { MAX_DESTINATION_LENGTH } from '../const.js';
+import { getDestinationById, getOfferById } from '../utils.js';
 
 const humanizeTripDates = (startDate, endDate) => {
   const start = startDate.split(' ').reverse();
@@ -14,15 +15,15 @@ const humanizeTripDates = (startDate, endDate) => {
 
 };
 
-function createTripInfoTemplate(tripPointsModel) {
-  const tripPoints = tripPointsModel.tripPoints;
-  const destinations = [];
+function createTripInfoTemplate(tripPoints, destinations, allOffers) {
+
+  const destinationsList = [];
   let sum = 0;
   tripPoints.forEach((tripPoint) => {
-    destinations.push(tripPointsModel.getDestinationById(tripPoint.destination).name);
+    destinationsList.push(getDestinationById(tripPoint.destination, destinations).name);
 
-    const tripPointOffers = tripPoint.offers.map((offerId) => tripPointsModel.getOfferById(offerId));
-    const offersPrice = tripPointOffers.reduce((total, offer) => total + offer.price, 0);
+    const OffersList = tripPoint.offers.map((offerId) => getOfferById(offerId, allOffers));
+    const offersPrice = OffersList.reduce((total, offer) => total + offer.price, 0);
     sum += tripPoint.basePrice + offersPrice;
   });
 
@@ -33,7 +34,7 @@ function createTripInfoTemplate(tripPointsModel) {
 
   return (`<section class="trip-main__trip-info  trip-info">
   <div class="trip-info__main">
-  <h1 class="trip-info__title">${destinations.length > MAX_DESTINATION_LENGTH ? `${destinations[0]} &mdash; ... &mdash; ${destinations[destinations.length - 1]}` : destinations.join(' &mdash; ')}</h1>
+  <h1 class="trip-info__title">${destinationsList.length > MAX_DESTINATION_LENGTH ? `${destinationsList[0]} &mdash; ... &mdash; ${destinationsList[destinationsList.length - 1]}` : destinationsList.join(' &mdash; ')}</h1>
 
     <p class="trip-info__dates">${humanizeTripDate}</p>
   </div>
@@ -45,14 +46,18 @@ function createTripInfoTemplate(tripPointsModel) {
 }
 
 export default class TripInfoView extends AbstractView {
-  #tripPointsModel = null;
+  #tripPoints = null;
+  #destinations = null;
+  #offers = null;
 
-  constructor ({tripPointsModel}) {
+  constructor ({tripPoints, destinations, offers}) {
     super();
-    this.#tripPointsModel = tripPointsModel;
+    this.#tripPoints = tripPoints;
+    this.#destinations = destinations;
+    this.#offers = offers;
   }
 
   get template() {
-    return createTripInfoTemplate(this.#tripPointsModel);
+    return createTripInfoTemplate(this.#tripPoints, this.#destinations, this.#offers);
   }
 }

@@ -2,6 +2,8 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import * as dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import { getDestinationById, getOffersByType } from '../utils.js';
+import he from 'he';
 
 
 function createCityElements(cities) {
@@ -10,14 +12,14 @@ function createCityElements(cities) {
   );
 }
 
-function createOffersList(allOffers, checkedOffers) {
+function createOffersList(allOffers, checkedOffers, isDisabled) {
   const newOffers = [];
   let counter = 1;
   allOffers.forEach((offer) => {
     const isChecked = checkedOffers.includes(offer.id) ? 'checked' : '';
     newOffers.push(`
       <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').join('-')}-${counter}" type="checkbox" name="event-offer-${offer.title.split(' ').join('-')}" data-id="${offer.id}" ${isChecked}>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.title.split(' ').join('-')}-${counter}" type="checkbox" name="event-offer-${offer.title.split(' ').join('-')}" data-id="${offer.id}" ${isChecked} ${isDisabled ? 'disabled' : ''}>
       <label class="event__offer-label" for="event-offer-${offer.title.split(' ').join('-')}-${counter}">
         <span class="event__offer-title">${offer.title}</span>
           +€&nbsp;
@@ -40,16 +42,11 @@ function createEventsList(allEvents) {
 }
 
 
-function createEditableTripPointTemplate(tripPoints, tripPointsModel) {
-  const { basePrice, dateFrom, dateTo, destination, offers, type } = tripPoints;
+function createEditableTripPointTemplate(tripPoint, destinations, allOffers, events, cities) {
+  const { basePrice, dateFrom, dateTo, destination, offers, type, isSaving, isDeleting, isDisabled} = tripPoint;
 
-  const destinations = tripPointsModel.getDestinationById(destination);
-
-  const allOffers = tripPointsModel.getOffersByType(type);
-
-
-  const events = tripPointsModel.offers.map((offer) => offer.type);
-  const cities = tripPointsModel.destinations.map((item) => item.name);
+  const destinationById = getDestinationById(destination, destinations);
+  const offersByType = getOffersByType(type, allOffers);
 
   return (`<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -59,7 +56,7 @@ function createEditableTripPointTemplate(tripPoints, tripPointsModel) {
         <span class="visually-hidden">Choose event type</span>
         <img class="event__type-icon" width="17" height="17" src="img/icons/${type}.png" alt="Event type icon">
       </label>
-      <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+      <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${isDisabled ? 'disabled' : ''}>
 
       <div class="event__type-list">
         <fieldset class="event__type-group">
@@ -73,7 +70,7 @@ function createEditableTripPointTemplate(tripPoints, tripPointsModel) {
       <label class="event__label  event__type-output" for="event-destination-1">
         ${type}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinations.name}" list="destination-list-1" required>
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destinationById.name)}" list="destination-list-1" ${isDisabled ? 'disabled' : ''} required>
       <datalist id="destination-list-1">
       ${createCityElements(cities)}
       </datalist>
@@ -81,10 +78,10 @@ function createEditableTripPointTemplate(tripPoints, tripPointsModel) {
 
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''}" required>
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''} required>
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''}" required>
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''} required>
     </div>
 
     <div class="event__field-group  event__field-group--price">
@@ -92,13 +89,13 @@ function createEditableTripPointTemplate(tripPoints, tripPointsModel) {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}" required>
+      <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''} required>
     </div>
 
 
-    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    <button class="event__reset-btn" type="reset">Delete</button>
-    <button class="event__rollup-btn" type="button">
+    <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+    <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
+    <button class="event__rollup-btn" type="button" ${isDisabled ? 'disabled' : ''}>
       <span class="visually-hidden">Open event</span>
     </button>
   </header>
@@ -107,13 +104,13 @@ function createEditableTripPointTemplate(tripPoints, tripPointsModel) {
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
       <div class="event__available-offers">
-        ${createOffersList(allOffers, offers)}
+        ${createOffersList(offersByType.offers, offers, isDisabled)}
       </div>
     </section>
 
     <section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">${destinations.description}</p>
+      <p class="event__destination-description">${destinationById.description}</p>
     </section>
   </section>
 </form>
@@ -121,16 +118,24 @@ function createEditableTripPointTemplate(tripPoints, tripPointsModel) {
 }
 
 export default class EditableTripPointView extends AbstractStatefulView {
-  #tripPointsModel = null;
+  #destinations = null;
+  #offers = null;
+  #events = null;
+  #cities = null;
+
   #handleFormSubmit = null;
   #handleFormCancel = null;
   #handleFormDelete = null;
   #datePickerFrom = null;
   #datePickerTo = null;
 
-  constructor({ tripPointsModel, tripPoint, onFormSubmit, onFormCancel, onFormDelete }) {
+  constructor({ destinations, offers, events, cities, tripPoint, onFormSubmit, onFormCancel, onFormDelete }) {
     super();
-    this.#tripPointsModel = tripPointsModel;
+    this.#destinations = destinations;
+    this.#offers = offers;
+    this.#events = events;
+    this.#cities = cities;
+
     this._setState(EditableTripPointView.parseTripPointToState(tripPoint));
     this.#handleFormSubmit = onFormSubmit;
     this.#handleFormCancel = onFormCancel;
@@ -140,7 +145,7 @@ export default class EditableTripPointView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEditableTripPointTemplate(this._state, this.#tripPointsModel);
+    return createEditableTripPointTemplate(this._state, this.#destinations, this.#offers, this.#events, this.#cities);
   }
 
   removeElement() {
@@ -243,12 +248,11 @@ export default class EditableTripPointView extends AbstractStatefulView {
 
   #onDestinationChange = (evt) => {
     evt.preventDefault();
-    const newDestination = this.#tripPointsModel.allDestinations.find((destination) => destination.name === evt.target.value);
+    const newDestination = this.#destinations.find((destination) => destination.name === evt.target.value);
 
     if (newDestination) {
       this.updateElement({
         destination: newDestination.id,
-        description: newDestination.description,
       });
     } else {
       evt.target.value = '';
@@ -283,8 +287,21 @@ export default class EditableTripPointView extends AbstractStatefulView {
     }
   };
 
-  static parseTripPointToState = (tripPoint) => ({ ...tripPoint });
-  static parseStateToTripPoint = (state) => ({ ...state });
+  static parseTripPointToState = (tripPoint) => ({
+    ...tripPoint,
+    isSaving: false,
+    isDeleting: false,
+    isDisabled: false,
+  });
+
+  static parseStateToTripPoint = (state) => {
+    const tripPoint = { ...state };
+    delete tripPoint.isDisabled;
+    delete tripPoint.isSaving;
+    delete tripPoint.isDeleting;
+
+    return tripPoint;
+  };
 
   reset(tripPoint) {
     this.updateElement(EditableTripPointView.parseTripPointToState(tripPoint));

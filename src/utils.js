@@ -48,6 +48,21 @@ const getEventLasting = (dateFrom, dateTo) => {
   return eventLasting;
 };
 
+const getDestinationById = (id, destinations) => destinations.find((element) => element.id === id);
+const getOffersByType = (type, offers) => offers.find((offer) => offer.type === type);
+
+const getOfferById = (id, offers) => {
+  let offerById;
+  offers.forEach((element) => {
+    element.offers.forEach((offer) => {
+      if (offer.id === id) {
+        offerById = offer;
+      }
+    });
+  });
+  return offerById;
+};
+
 const isTripPointFuture = (dateFrom) => dateFrom && dayjs().isBefore(dateFrom, 'D');
 
 const isTripPointPresent = (dateFrom, dateTo) => {
@@ -66,4 +81,4 @@ const filter = {
   [FilterType.PAST]: (tripPoints) => tripPoints.filter((tripPoint) => isTripPointPast(tripPoint.dateTo)),
 };
 
-export { getRandomInteger, getRandomArrayElement, createIdGenerator, humanizeDate, humanizeTime, getEventLasting, filter };
+export { getRandomInteger, getRandomArrayElement, createIdGenerator, humanizeDate, humanizeTime, getEventLasting, filter, getDestinationById, getOfferById, getOffersByType };
