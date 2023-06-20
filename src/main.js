@@ -14,12 +14,12 @@ const filterElement = siteHeaderElement.querySelector('.trip-controls__filters')
 const tripEventsElement = document.querySelector('.trip-events');
 
 
-const tripPointsModel = new TripPointsModel({tripPointsApiService: new TripPointsApiService(END_POINT, AUTHORIZATION)});
+const tripPointsModel = new TripPointsModel({ tripPointsApiService: new TripPointsApiService(END_POINT, AUTHORIZATION) });
 const filterModel = new FilterModel();
 
-const filterPresenter = new FilterPresenter({filterContainer: filterElement, tripPointsModel, filterModel});
-const tripInfoPresenter = new TripInfoPresenter({tripInfoContainer: siteHeaderElement, tripPointsModel});
-const tripEventsListPresenter = new TripEventsListPresenter({newEventBtn: siteHeaderElement, tripEventsListContainer: tripEventsElement, tripPointsModel, filterModel});
+const filterPresenter = new FilterPresenter({ filterContainer: filterElement, tripPointsModel, filterModel });
+const tripInfoPresenter = new TripInfoPresenter({ tripInfoContainer: siteHeaderElement, tripPointsModel });
+const tripEventsListPresenter = new TripEventsListPresenter({ newEventBtn: siteHeaderElement, tripEventsListContainer: tripEventsElement, tripPointsModel, filterModel });
 
 tripPointsModel.init();
 tripInfoPresenter.init();

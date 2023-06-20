@@ -149,7 +149,7 @@ export default class TripPointPresenter {
     this.#handleDataChange(
       UserAction.UPDATE_TRIP_POINT,
       UpdateType.PATCH,
-      {...this.#tripPoint, isFavorite: !this.#tripPoint.isFavorite}
+      { ...this.#tripPoint, isFavorite: !this.#tripPoint.isFavorite }
     );
   };
 
@@ -159,7 +159,6 @@ export default class TripPointPresenter {
       UpdateType.MINOR,
       data
     );
-    // this.#replaceEditFormToTripPointComponent();
   };
 
   #handleFormCancel = () => {

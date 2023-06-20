@@ -12,7 +12,6 @@ const TRIP_POINT_FORM = {
   type: 'taxi'
 };
 
-
 const FilterType = {
   EVERYTHING: 'Everything',
   FUTURE: 'Future',
@@ -58,6 +57,6 @@ const TimeLimitForUiBlocker = {
 };
 
 
-
-export { DATE_FORMAT, TIME_FORMAT, FilterType, Mode, SortType, UserAction, UpdateType, TRIP_POINT_FORM, MAX_DESTINATION_LENGTH, EmptyListText, TimeLimitForUiBlocker
+export {
+  DATE_FORMAT, TIME_FORMAT, FilterType, Mode, SortType, UserAction, UpdateType, TRIP_POINT_FORM, MAX_DESTINATION_LENGTH, EmptyListText, TimeLimitForUiBlocker
 };

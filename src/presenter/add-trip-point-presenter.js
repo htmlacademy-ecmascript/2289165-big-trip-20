@@ -12,7 +12,7 @@ export default class NewTripPointPresenter {
 
   #newTripPointComponent = null;
 
-  constructor ({tripPointsModel, tripPointsListContainer, onDataChange, onTripPointDestroy}) {
+  constructor({ tripPointsModel, tripPointsListContainer, onDataChange, onTripPointDestroy }) {
     this.#tripPointsModel = tripPointsModel;
     this.#tripPointsListContainer = tripPointsListContainer;
 
@@ -20,8 +20,8 @@ export default class NewTripPointPresenter {
     this.#handleTripPointDestroy = onTripPointDestroy;
   }
 
-  init () {
-    this.#newTripPointComponent = new NewTripPointView ({
+  init() {
+    this.#newTripPointComponent = new NewTripPointView({
       destinations: this.#tripPointsModel.destinations,
       offers: this.#tripPointsModel.offers,
       events: this.#tripPointsModel.getEvents(),
@@ -30,12 +30,12 @@ export default class NewTripPointPresenter {
       onFormCancel: this.#handleFormCancel,
     });
 
-    render (this.#newTripPointComponent, this.#tripPointsListContainer, RenderPosition.AFTERBEGIN);
+    render(this.#newTripPointComponent, this.#tripPointsListContainer, RenderPosition.AFTERBEGIN);
 
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
 
-  destroy () {
+  destroy() {
     if (this.#newTripPointComponent === null) {
       return;
     }
@@ -47,7 +47,7 @@ export default class NewTripPointPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   }
 
-  setSaving () {
+  setSaving() {
     this.#newTripPointComponent.updateElement({
       isDisabled: true,
       isSaving: true,
@@ -71,7 +71,6 @@ export default class NewTripPointPresenter {
       UpdateType.MINOR,
       tripPoint,
     );
-    // this.destroy();
   };
 
   #handleFormCancel = () => {

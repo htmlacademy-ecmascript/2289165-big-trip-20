@@ -3,7 +3,7 @@ import TripEventsListView from '../view/trip-events-list-view.js';
 import SortingView from '../view/sort-view.js';
 import TripEventsListEmptyView from '../view/trip-events-list-empty-view.js';
 import TripPointPresenter from './trip-point-presenter.js';
-import { SortType, UserAction, UpdateType, FilterType } from '../const.js';
+import { SortType, UserAction, UpdateType, FilterType, TimeLimitForUiBlocker } from '../const.js';
 import * as dayjs from 'dayjs';
 import { filter } from '../utils.js';
 import NewTripPointPresenter from './add-trip-point-presenter.js';
@@ -11,7 +11,6 @@ import NewEventBtnView from '../view/btn-new-event-view.js';
 import LoadingView from '../view/loading-view.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import ErrorView from '../view/error-view.js';
-import { TimeLimitForUiBlocker } from '../const.js';
 
 
 export default class TripEventsListPresenter {
@@ -95,7 +94,7 @@ export default class TripEventsListPresenter {
 
     this.#newEventBtn.element.disabled = false;
 
-    if(!this.#tripPointsModel.offers.length || !this.#tripPointsModel.destinations.length) {
+    if (!this.#tripPointsModel.offers.length || !this.#tripPointsModel.destinations.length) {
       this.#newEventBtn.element.disabled = true;
       this.#renderError();
       return;
@@ -245,8 +244,8 @@ export default class TripEventsListPresenter {
 
   #onNewEventBtnClick = () => {
     this.#isNewTripPoint = true;
-    this.#newEventBtn.element.disabled = true;
     this.#createNewTripPoint();
+    this.#newEventBtn.element.disabled = true;
   };
 
   #handleNewTripPointFormClose = () => {

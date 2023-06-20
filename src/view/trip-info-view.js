@@ -15,7 +15,7 @@ const humanizeTripDates = (startDate, endDate) => {
 
 };
 
-function createTripInfoTemplate(tripPoints, destinations, allOffers) {
+const createTripInfoTemplate = (tripPoints, destinations, allOffers) => {
 
   const destinationsList = [];
   let sum = 0;
@@ -43,14 +43,14 @@ function createTripInfoTemplate(tripPoints, destinations, allOffers) {
     Total: &euro;&nbsp;<span class="trip-info__cost-value">${sum}</span>
   </p>
 </section>`);
-}
+};
 
 export default class TripInfoView extends AbstractView {
   #tripPoints = null;
   #destinations = null;
   #offers = null;
 
-  constructor ({tripPoints, destinations, offers}) {
+  constructor({ tripPoints, destinations, offers }) {
     super();
     this.#tripPoints = tripPoints;
     this.#destinations = destinations;

@@ -6,24 +6,21 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import he from 'he';
 
-function createCityElements(cities) {
-  return (
-    cities.map((city) => (`<option value="${city}"></option>`)).join(' ')
-  );
-}
+const createCityElements = (cities) => cities.map((city) => (`<option value="${city}"></option>`)).join('');
 
-function createEventsList(allEvents) {
-  return (allEvents.map((event) => (
-    `<div class="event__type-item">
+const createPictureElements = (pictures) => (
+  pictures.map((picture) => (`<img class="event__photo" src="${picture.src}" alt="${picture.description}">`)).join('')
+);
+
+const createEventsList = (allEvents) => (allEvents.map((event) => (
+  `<div class="event__type-item">
       <input id="event-type-${event}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${event}">
       <label class="event__type-label  event__type-label--${event}" for="event-type-${event}-1">${event}</label>
      </div>`))
-    .join(''));
-}
+  .join(''));
 
-function createDestinationElement(destination) {
-  return (
-    `<section class="event__section  event__section--destination">
+const createDestinationElement = (destination) => (
+  `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${destination.description}</p>
       <div class="event__photos-container">
@@ -31,10 +28,9 @@ function createDestinationElement(destination) {
           ${createPictureElements(destination.pictures)}
         </div>
       </div>
-    </section>`);
-}
+  </section>`);
 
-function createOffersList(allOffers, offers, isDisabled) {
+const createOffersList = (allOffers, offers, isDisabled) => {
   const newOffers = [];
   let counter = 1;
   allOffers.forEach((offer) => {
@@ -52,17 +48,9 @@ function createOffersList(allOffers, offers, isDisabled) {
   });
 
   return newOffers.join('');
-}
+};
 
-function createPictureElements(pictures) {
-
-  return (
-    pictures.map((picture) => (`<img class="event__photo" src="${picture.src}" alt="${picture.description}">`
-    )).join(' ')
-  );
-}
-
-function createNewTripPointTemplate(tripPoints, destinations, allOffers, events, cities) {
+const createNewTripPointTemplate = (tripPoints, destinations, allOffers, events, cities) => {
   const { basePrice, dateFrom, dateTo, destination, offers, type, isSaving, isDisabled } = tripPoints;
 
   const destinationById = getDestinationById(destination, destinations);
@@ -98,10 +86,10 @@ function createNewTripPointTemplate(tripPoints, destinations, allOffers, events,
 
         <div class="event__field-group  event__field-group--time">
           <label class="visually-hidden" for="event-start-time-1">From</label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''} required>
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${dateFrom ? dayjs(dateFrom).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''} required autocomplete="off">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">To</label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''} required>
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${dateTo ? dayjs(dateTo).format('DD/MM/YY HH:mm') : ''}" ${isDisabled ? 'disabled' : ''} required autocomplete="off">
         </div>
 
         <div class="event__field-group  event__field-group--price">
@@ -128,7 +116,7 @@ function createNewTripPointTemplate(tripPoints, destinations, allOffers, events,
       </section>
     </form>
   </li>`);
-}
+};
 
 export default class NewTripPointView extends AbstractStatefulView {
   #destinations = null;
@@ -179,10 +167,12 @@ export default class NewTripPointView extends AbstractStatefulView {
     form.addEventListener('submit', this.#formSubmitHandler);
     form.addEventListener('reset', this.#formCancelHandler);
 
-    form.querySelector('.event__type-group').addEventListener('change', this.#onTripPointTypeChange);
-    form.querySelector('.event__input--destination').addEventListener('change', this.#onDestinationChange);
-    form.querySelector('.event__input--price').addEventListener('change', this.#onPriceChange);
-    form.querySelector('.event__available-offers').addEventListener('change', this.#onOfferChange);
+    form.querySelector('#event-destination-1').addEventListener('click', this.#inputTypeClickHandler);
+
+    form.querySelector('.event__type-group').addEventListener('change', this.#tripPointTypeChangeHandler);
+    form.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    form.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
+    form.querySelector('.event__available-offers').addEventListener('change', this.#offerChangeHandler);
     this.#setDatePickers();
   }
 
@@ -204,6 +194,7 @@ export default class NewTripPointView extends AbstractStatefulView {
       dateFromElement,
       {
         dateFormat: 'd/m/y H:i',
+        allowInput: true,
         enableTime: true,
         'time_24hr': true,
         defaultDate: this._state.dateFrom,
@@ -220,6 +211,7 @@ export default class NewTripPointView extends AbstractStatefulView {
       dateToElement,
       {
         dateFormat: 'd/m/y H:i',
+        allowInput: true,
         enableTime: true,
         'time_24hr': true,
         defaultDate: this._state.dateTo,
@@ -242,7 +234,12 @@ export default class NewTripPointView extends AbstractStatefulView {
     this.#handleFormCancel();
   };
 
-  #onDestinationChange = (evt) => {
+  #inputTypeClickHandler = (evt) => {
+    evt.preventDefault();
+    evt.target.value = '';
+  };
+
+  #destinationChangeHandler = (evt) => {
     evt.preventDefault();
     const newDestination = this.#destinations.find((destination) => destination.name === evt.target.value);
 
@@ -255,7 +252,7 @@ export default class NewTripPointView extends AbstractStatefulView {
     }
   };
 
-  #onTripPointTypeChange = (evt) => {
+  #tripPointTypeChangeHandler = (evt) => {
     evt.preventDefault();
     if (evt.target.tagName === 'INPUT') {
       this.updateElement({
@@ -265,7 +262,7 @@ export default class NewTripPointView extends AbstractStatefulView {
     }
   };
 
-  #onPriceChange = (evt) => {
+  #priceChangeHandler = (evt) => {
     evt.preventDefault();
 
     const newPrice = Math.abs(Math.round(evt.target.value));
@@ -281,7 +278,7 @@ export default class NewTripPointView extends AbstractStatefulView {
     });
   };
 
-  #onOfferChange = (evt) => {
+  #offerChangeHandler = (evt) => {
     evt.preventDefault();
     if (evt.target.tagName === 'INPUT') {
       const checkedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
