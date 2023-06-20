@@ -194,6 +194,7 @@ export default class EditableTripPointView extends AbstractStatefulView {
         'time_24hr': true,
         defaultDate: this._state.dateFrom,
         minDate: 'today',
+        maxDate: this._state.dateTo,
         locale: {
           firstDayOfWeek: 1
         },
@@ -208,7 +209,7 @@ export default class EditableTripPointView extends AbstractStatefulView {
         enableTime: true,
         'time_24hr': true,
         defaultDate: this._state.dateTo,
-        minDate: this._state.dateFrom,
+        minDate: this._state.dateFrom ? this._state.dateFrom : 'today',
         locale: {
           firstDayOfWeek: 1
         },
