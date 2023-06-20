@@ -5,6 +5,7 @@ import { Mode, UserAction, UpdateType } from '../const.js';
 
 export default class TripPointPresenter {
 
+  #tripPointsModel = null;
   #tripEventsListContainer = null;
   #handleDataChange = null;
   #handleModeChange = null;
@@ -16,7 +17,8 @@ export default class TripPointPresenter {
   #mode = Mode.DEFAULT;
 
 
-  constructor({ tripEventsListContainer, onDataChange, onModeChange }) {
+  constructor({ tripPointsModel, tripEventsListContainer, onDataChange, onModeChange }) {
+    this.#tripPointsModel = tripPointsModel;
     this.#tripEventsListContainer = tripEventsListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
@@ -29,12 +31,14 @@ export default class TripPointPresenter {
     const prevEditableTripPointComponent = this.#editableTripPointComponent;
 
     this.#tripPointComponent = new TripPointView({
+      tripPointsModel: this.#tripPointsModel,
       tripPoint: this.#tripPoint,
       onEditClick: this.#handleEditClick,
       onFavoriteClick: this.#handleFavouriteClick,
     });
 
     this.#editableTripPointComponent = new EditableTripPointView({
+      tripPointsModel: this.#tripPointsModel,
       tripPoint: this.#tripPoint,
       onFormSubmit: this.#handleFormSubmit,
       onFormCancel: this.#handleFormCancel,
@@ -119,7 +123,7 @@ export default class TripPointPresenter {
 
   #handleFormDelete = (data) => {
     this.#handleDataChange(
-      UserAction.DELETE_POINT,
+      UserAction.DELETE_TRIP_POINT,
       UpdateType.MINOR,
       data
     );

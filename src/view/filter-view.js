@@ -12,8 +12,8 @@ function createFilterItemTemplate(filter, currentFilter) {
       type="radio"
        name="trip-filter"
        value="${type}"
-        ${(type) === currentFilter ? 'checked' : ''}
-        ${isDisabled ? 'disabled' : ''}
+       ${(type) === currentFilter ? 'checked' : ''}
+       ${isDisabled ? 'disabled' : ''}
       />
       <label
       class="trip-filters__filter-label"

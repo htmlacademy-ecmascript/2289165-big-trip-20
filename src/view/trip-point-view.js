@@ -1,7 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { getDestinationById } from '../mock/destinations.js';
 import { humanizeDate, humanizeTime, getEventLasting } from '../utils.js';
-import { getOfferById } from '../mock/offers.js';
 
 function createSelectedOffers (offers) {
   return (
@@ -15,20 +13,20 @@ function createSelectedOffers (offers) {
   );
 }
 
-function createTripPointTemplate(tripPoint) {
+function createTripPointTemplate(tripPoint, tripPointsModel) {
   const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type} = tripPoint;
 
   const date = humanizeDate(dateFrom);
   const timeFrom = humanizeTime(dateFrom);
   const timeTo = humanizeTime(dateTo);
-  const destinationElement = getDestinationById(destination);
+  const destinationElement = tripPointsModel.getDestinationById(destination);
   const eventLasting = getEventLasting(dateFrom, dateTo);
   const favorite = isFavorite ? 'event__favorite-btn--active' : '';
 
   const offersList = [];
 
   offers.forEach((offer) => {
-    offersList.push(getOfferById(offer));
+    offersList.push(tripPointsModel.getOfferById(offer));
   });
 
   return (`<li class="trip-events__item">
@@ -67,12 +65,14 @@ function createTripPointTemplate(tripPoint) {
 }
 
 export default class TripPointView extends AbstractView {
+  #tripPointsModel = null;
   #tripPoint = null;
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-  constructor ({tripPoint, onEditClick, onFavoriteClick}) {
+  constructor ({tripPointsModel, tripPoint, onEditClick, onFavoriteClick}) {
     super();
+    this.#tripPointsModel = tripPointsModel;
     this.#tripPoint = tripPoint;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
@@ -85,7 +85,7 @@ export default class TripPointView extends AbstractView {
   }
 
   get template() {
-    return createTripPointTemplate(this.#tripPoint);
+    return createTripPointTemplate(this.#tripPoint, this.#tripPointsModel);
   }
 
   #editEventHandler = (evt) => {

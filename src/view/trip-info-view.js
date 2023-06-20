@@ -1,7 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeDate } from '../utils.js';
-import { getDestinationById } from '../mock/destinations.js';
-import { getOfferById } from '../mock/offers.js';
 import { MAX_DESTINATION_LENGTH } from '../const.js';
 
 const humanizeTripDates = (startDate, endDate) => {
@@ -16,15 +14,16 @@ const humanizeTripDates = (startDate, endDate) => {
 
 };
 
-function createTripInfoTemplate(tripPoints) {
+function createTripInfoTemplate(tripPointsModel) {
+  const tripPoints = tripPointsModel.tripPoints;
   const destinations = [];
-  let sum;
+  let sum = 0;
   tripPoints.forEach((tripPoint) => {
-    destinations.push(getDestinationById(tripPoint.destination).name);
+    destinations.push(tripPointsModel.getDestinationById(tripPoint.destination).name);
 
-    const tripPointOffers = tripPoint.offers.map((offerId) => getOfferById(offerId));
+    const tripPointOffers = tripPoint.offers.map((offerId) => tripPointsModel.getOfferById(offerId));
     const offersPrice = tripPointOffers.reduce((total, offer) => total + offer.price, 0);
-    sum = tripPoint.basePrice + offersPrice;
+    sum += tripPoint.basePrice + offersPrice;
   });
 
   const startDate = humanizeDate(tripPoints[0].dateFrom);
@@ -46,14 +45,14 @@ function createTripInfoTemplate(tripPoints) {
 }
 
 export default class TripInfoView extends AbstractView {
-  #tripPoints = null;
+  #tripPointsModel = null;
 
-  constructor ({tripPoints}) {
+  constructor ({tripPointsModel}) {
     super();
-    this.#tripPoints = tripPoints;
+    this.#tripPointsModel = tripPointsModel;
   }
 
   get template() {
-    return createTripInfoTemplate(this.#tripPoints);
+    return createTripInfoTemplate(this.#tripPointsModel);
   }
 }

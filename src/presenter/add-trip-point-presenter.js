@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid';
 
 export default class NewTripPointPresenter {
 
+  #tripPointsModel = null;
   #tripPointsListContainer = null;
 
   #handleDataChange = null;
@@ -12,7 +13,8 @@ export default class NewTripPointPresenter {
 
   #editableTripPointComponent = null;
 
-  constructor ({tripPointsListContainer, onDataChange, onTripPointDestroy}) {
+  constructor ({tripPointsModel, tripPointsListContainer, onDataChange, onTripPointDestroy}) {
+    this.#tripPointsModel = tripPointsModel;
     this.#tripPointsListContainer = tripPointsListContainer;
 
     this.#handleDataChange = onDataChange;
@@ -21,6 +23,7 @@ export default class NewTripPointPresenter {
 
   init () {
     this.#editableTripPointComponent = new NewTripPointView ({
+      tripPointsModel: this.#tripPointsModel,
       onFormSubmit: this.#handleFormSubmit,
       onFormCancel: this.#handleFormCancel,
     });

@@ -1,7 +1,5 @@
-import { CITIES, EVENTS, TRIP_POINT_FORM } from '../const.js';
+import { TRIP_POINT_FORM } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { getDestinationById, allDestinations } from '../mock/destinations.js';
-import { getOffersByType, getOfferById } from '../mock/offers.js';
 import * as dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -34,7 +32,7 @@ function createDestinationElement (destination) {
     </section>`);
 }
 
-function createOffersList(allOffers, checkedOffers) {
+function createOffersList(allOffers, checkedOffers = []) {
   const newOffers = [];
   let counter = 1;
   allOffers.forEach((offer) => {
@@ -62,17 +60,16 @@ function createPictureElements(pictures) {
   );
 }
 
-function createNewTripPointTemplate(tripPoints) {
-  const { basePrice, dateFrom, dateTo, destination, offers, type } = tripPoints;
+function createNewTripPointTemplate(tripPoints, tripPointsModel) {
+  const { basePrice, dateFrom, dateTo, destination, type } = tripPoints;
 
-  const destinations = getDestinationById(destination);
+  const destinations = tripPointsModel.getDestinationById(destination);
 
-  const allOffers = getOffersByType(type);
+  const allOffers = tripPointsModel.getOffersByType(type);
 
-  const checkedOffers = [];
-  offers.forEach((id) => {
-    checkedOffers.push(getOfferById(id));
-  });
+  const events = tripPointsModel.offers.map((offer) => offer.type);
+  const cities = tripPointsModel.destinations.map((city) => city.name);
+
 
   return (`<li class="trip-events__item">
     <form class="event event--edit" action="#" method="post">
@@ -87,7 +84,7 @@ function createNewTripPointTemplate(tripPoints) {
           <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
-                ${createEventsList(EVENTS)}
+                ${createEventsList(events)}
               </fieldset>
           </div>
         </div>
@@ -98,7 +95,7 @@ function createNewTripPointTemplate(tripPoints) {
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinations ? destinations.name : ''}" list="destination-list-1" required>
           <datalist id="destination-list-1">
-            ${createCityElements(CITIES)}
+            ${createCityElements(cities)}
           </datalist>
         </div>
 
@@ -126,7 +123,7 @@ function createNewTripPointTemplate(tripPoints) {
           <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
           <div class="event__available-offers">
-            ${createOffersList(allOffers, checkedOffers)}
+            ${createOffersList(allOffers)}
           </div>
         </section>
 
@@ -137,14 +134,16 @@ function createNewTripPointTemplate(tripPoints) {
 }
 
 export default class NewTripPointView extends AbstractStatefulView {
+  #tripPointsModel = null;
   #handleFormSubmit = null;
   #handleFormCancel = null;
   #datePickerFrom = null;
   #datePickerTo = null;
 
 
-  constructor({ onFormSubmit, onFormCancel }) {
+  constructor({ tripPointsModel, onFormSubmit, onFormCancel }) {
     super();
+    this.#tripPointsModel = tripPointsModel;
     this._setState(NewTripPointView.parseTripPointToState(TRIP_POINT_FORM));
     this.#handleFormSubmit = onFormSubmit;
     this.#handleFormCancel = onFormCancel;
@@ -153,7 +152,7 @@ export default class NewTripPointView extends AbstractStatefulView {
   }
 
   get template() {
-    return createNewTripPointTemplate(NewTripPointView.parseTripPointToState(this._state));
+    return createNewTripPointTemplate(NewTripPointView.parseTripPointToState(this._state), this.#tripPointsModel);
   }
 
   removeElement() {
@@ -245,7 +244,7 @@ export default class NewTripPointView extends AbstractStatefulView {
 
   #onDestinationChange = (evt) => {
     evt.preventDefault();
-    const newDestination = allDestinations.find((destination) => destination.name === evt.target.value);
+    const newDestination = this.#tripPointsModel.destinations.find((destination) => destination.name === evt.target.value);
 
     if (newDestination) {
       this.updateElement({
