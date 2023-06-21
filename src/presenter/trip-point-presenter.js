@@ -172,7 +172,6 @@ export default class TripPointPresenter {
       UpdateType.MINOR,
       data
     );
-    remove(this.#editableTripPointComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 }
