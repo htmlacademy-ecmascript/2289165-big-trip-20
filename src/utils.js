@@ -7,25 +7,6 @@ dayjs.extend(duration);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
-
-function getRandomInteger(min, max) {
-  const result = Math.random() * (max - min + 1) + min;
-  return Math.floor(result);
-}
-
-function getRandomArrayElement(elements) {
-  return elements[getRandomInteger(0, elements.length - 1)];
-}
-
-const createIdGenerator = () => {
-  let lastGeneratedId = 0;
-
-  return function () {
-    lastGeneratedId += 1;
-    return lastGeneratedId;
-  };
-};
-
 const humanizeDate = (date) => date ? dayjs(date).format(DATE_FORMAT) : '';
 const humanizeTime = (time) => time ? dayjs(time).format(TIME_FORMAT) : '';
 
@@ -48,6 +29,21 @@ const getEventLasting = (dateFrom, dateTo) => {
   return eventLasting;
 };
 
+const getDestinationById = (id, destinations) => destinations.find((element) => element.id === id);
+const getOffersByType = (type, offers) => offers.find((offer) => offer.type === type);
+
+const getOfferById = (id, offers) => {
+  let offerById;
+  offers.forEach((element) => {
+    element.offers.forEach((offer) => {
+      if (offer.id === id) {
+        offerById = offer;
+      }
+    });
+  });
+  return offerById;
+};
+
 const isTripPointFuture = (dateFrom) => dateFrom && dayjs().isBefore(dateFrom, 'D');
 
 const isTripPointPresent = (dateFrom, dateTo) => {
@@ -66,4 +62,4 @@ const filter = {
   [FilterType.PAST]: (tripPoints) => tripPoints.filter((tripPoint) => isTripPointPast(tripPoint.dateTo)),
 };
 
-export { getRandomInteger, getRandomArrayElement, createIdGenerator, humanizeDate, humanizeTime, getEventLasting, filter };
+export { humanizeDate, humanizeTime, getEventLasting, filter, getDestinationById, getOfferById, getOffersByType };

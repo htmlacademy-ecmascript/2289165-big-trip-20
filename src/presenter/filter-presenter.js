@@ -1,4 +1,4 @@
-import {render, remove} from '../framework/render.js';
+import { render, remove } from '../framework/render.js';
 import FilterView from '../view/filter-view.js';
 import { UpdateType } from '../const.js';
 import { filter } from '../utils.js';
@@ -10,7 +10,7 @@ export default class FilterPresenter {
   #tripPointsModel = null;
   #filterModel = null;
 
-  constructor({filterContainer, tripPointsModel, filterModel}) {
+  constructor({ filterContainer, tripPointsModel, filterModel }) {
     this.#filterContainer = filterContainer;
     this.#tripPointsModel = tripPointsModel;
     this.#filterModel = filterModel;
@@ -20,6 +20,11 @@ export default class FilterPresenter {
   }
 
   init() {
+
+    if (!this.#tripPointsModel.offers.length || !this.#tripPointsModel.destinations.length) {
+      return;
+    }
+
     const filters = this.filters;
     this.#filterComponent = new FilterView({
       filter: filters,
@@ -29,7 +34,7 @@ export default class FilterPresenter {
     render(this.#filterComponent, this.#filterContainer);
   }
 
-  get filters () {
+  get filters() {
     const tripPoints = this.#tripPointsModel.tripPoints;
 
     return Object.entries(filter).map(
